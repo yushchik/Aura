@@ -1,6 +1,12 @@
+import java.util.Properties
+
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.devtools)
+    alias(libs.plugins.ktorfitPlugin)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -8,6 +14,10 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
+
         applicationId = "com.example.aura"
         minSdk = 24
         targetSdk = 34
@@ -27,21 +37,43 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
+    }
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
     }
 }
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation(libs.core)
+    implementation(libs.appcompat)
+    implementation(libs.material.v1110)
+    implementation(libs.constraintlayout)
+    implementation(libs.navFragment)
+    implementation(libs.navUI)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidJunit)
+    androidTestImplementation(libs.espresso)
+
+    implementation(libs.koin)
+    implementation(libs.viewbinding)
+
+    implementation(libs.timber)
+
+    implementation(libs.ktorGson)
+
+    implementation(libs.bundles.di)
+
+    ksp(libs.ktorfitKsp)
+    implementation(libs.bundles.ktor)
+
+    implementation(libs.bundles.room)
+    annotationProcessor(libs.roomAnnotations)
+    ksp(libs.roomKsp)
 }
